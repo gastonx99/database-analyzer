@@ -1,0 +1,53 @@
+#################
+## Maven
+#################
+target/
+
+#################
+## Gradle
+#################
+build/
+.gradle/
+gradle/
+gradlew.bat
+gradlew
+settings.gradle
+
+#################
+## Eclipse
+#################
+
+.project
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+local.properties
+.classpath
+.settings/
+.loadpath
+
+#################
+## Idea
+#################
+*.iml
+.idea
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+#*.launch
+
+#################
+## Others
+#################
+*.log
+.*.html
+Oracle
+
+database-analyzer/src/test/resources/liquibase
+# For liquibase generated db doc
+dbDoc

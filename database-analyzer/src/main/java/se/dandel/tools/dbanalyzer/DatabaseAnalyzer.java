@@ -17,7 +17,7 @@ import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
+import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 
 public class DatabaseAnalyzer {
@@ -97,7 +97,7 @@ public class DatabaseAnalyzer {
     }
 
     private void runLiquibase(Connection c) throws LiquibaseException {
-        ResourceAccessor resourceAccessor = new ClassLoaderResourceAccessor();
+        ResourceAccessor resourceAccessor = new FileSystemResourceAccessor();
         DatabaseConnection dbConn = new JdbcConnection(c);
         Liquibase liquibase = new Liquibase(settings.getLiquibaseChangelog(), resourceAccessor, dbConn);
         liquibase.update((String) null);

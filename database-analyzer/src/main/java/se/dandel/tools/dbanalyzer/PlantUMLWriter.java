@@ -2,6 +2,7 @@ package se.dandel.tools.dbanalyzer;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -116,26 +117,26 @@ public class PlantUMLWriter {
     private List<Column> getSortedTechColumns(Table table) {
         List<Column> columns = new ArrayList<Column>(table.getOrdinaryColumns());
         List<Column> technicalColumns = getTechnicalColumns(columns);
-        technicalColumns.sort(COLUMN_COMPARATOR);
+        Collections.sort(technicalColumns, COLUMN_COMPARATOR);
         return technicalColumns;
     }
 
     private List<Column> getSortedFunctionalColumns(Table table) {
         List<Column> xcolumns = new ArrayList<Column>(table.getOrdinaryColumns());
         List<Column> functionalColumns = getFunctionalColumns(xcolumns);
-        functionalColumns.sort(COLUMN_COMPARATOR);
+        Collections.sort(functionalColumns, COLUMN_COMPARATOR);
         return functionalColumns;
     }
 
     private List<Column> getSortedFkColumns(Table table) {
         List<Column> fkColumns = new ArrayList<Column>(table.getFkColumns());
-        fkColumns.sort(COLUMN_COMPARATOR);
+        Collections.sort(fkColumns, COLUMN_COMPARATOR);
         return fkColumns;
     }
 
     private List<Column> getSortedPkColumns(Table table) {
         List<Column> columns = new ArrayList<Column>(table.getPkColumns());
-        columns.sort(COLUMN_COMPARATOR);
+        Collections.sort(columns, COLUMN_COMPARATOR);
         return columns;
     }
 

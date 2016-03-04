@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <!-- Tables -->
+    <changeSet author="me" id="example-table1">
+        <createTable tableName="EXAMPLE_TABLE1">
+            <column name="ID" type="NUMBER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="EXAMPLE_TABLE1_PK" />
+            </column>
+            <column name="DTYPE" type="VARCHAR(40)" />
+            <column name="COLUMN1" type="NUMBER">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="me" id="example-table2">
+        <createTable tableName="EXAMPLE_TABLE2">
+            <column name="ID" type="NUMBER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="EXAMPLE_TABLE2_PK" />
+            </column>
+            <column name="FK_TABLE1" type="NUMBER" />
+            <column name="COLUMN1" type="NUMBER">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="me" id="fk-example-table1-table2">
+        <addForeignKeyConstraint baseColumnNames="FK_TABLE1" baseTableName="EXAMPLE_TABLE2"
+            constraintName="EXAMPLE_TABLE1_TABLE2_FK" referencedColumnNames="ID" referencedTableName="EXAMPLE_TABLE1" />
+    </changeSet>
+
+
+</databaseChangeLog>

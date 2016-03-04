@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/database-analyzer/src/main/java/se/dandel/tools/dbanalyzer/Main.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="se.dandel.tools.dbanalyzer.Main"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-jdbcDriver org.hsqldb.jdbcDriver&#13;&#10;-jdbcUrl jdbc:hsqldb:mem:testdb;sql.syntax_ora=true&#13;&#10;-liquibaseChangelog liquibase/master-ddl.xml&#13;&#10;-tablenamePattern EXAMPLE_%&#13;&#10;-technicalColumns UPPDATERAD,UPPDATERAD_AV,SKAPAD,SKAPAD_AV,CREATED,CREATED_BY,UPDATED,UPDATED_BY,DTYPE,VERSION&#13;&#10;-discriminatorColumn DTYPE&#13;&#10;-output target/database.plantuml"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="database-analyzer"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
+</launchConfiguration>

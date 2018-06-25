@@ -9,10 +9,6 @@
     <name>database-analyzer-parent</name>
     <packaging>pom</packaging>
 
-    <prerequisites>
-        <maven>3.2.2</maven>
-    </prerequisites>
-
     <modules>
         <module>local-tools</module>
         <module>database-analyzer</module>

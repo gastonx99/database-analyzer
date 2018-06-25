@@ -51,9 +51,9 @@ public class PlantUMLWriter {
 
     private void writeLegend() {
         pw().println("legend top");
-        pw().println("Separata sektioner för PK, FK, vanliga kolumner och tekniska kolumner");
-        pw().println("<i>Kursiv</i> stil för syntetiska nycklar");
-        pw().println("<b>Fet</b> stil för NOT NULL");
+        pw().println("Separata sektioner fÃ¶r PK, FK, vanliga kolumner och tekniska kolumner");
+        pw().println("<i>Kursiv</i> stil fÃ¶r syntetiska nycklar");
+        pw().println("<b>Fet</b> stil fÃ¶r NOT NULL");
         pw().println("endlegend");
     }
 

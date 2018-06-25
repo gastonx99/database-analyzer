@@ -1,26 +1,23 @@
 package se.dandel.tools.dbanalyzer;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import javax.inject.Inject;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
-
 import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.sql.*;
 
 public class DatabaseAnalyzer {
+
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Inject
     private PlantUMLWriter writer;
@@ -33,6 +30,7 @@ public class DatabaseAnalyzer {
     }
 
     public void analyze() throws Exception {
+        LOGGER.debug("Analyzing using settings {}", settings);
         Database database = analyzeDatabase();
         writer.write(database);
     }

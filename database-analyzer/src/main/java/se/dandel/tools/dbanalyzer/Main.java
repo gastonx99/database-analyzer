@@ -1,19 +1,22 @@
 package se.dandel.tools.dbanalyzer;
 
-import java.io.IOException;
+import org.apache.commons.cli.*;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
     public static void main(final String[] args) throws IOException {
+        List<String> arglist = args == null ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(args));
         try {
-            CommandLine cmd = parseOptions(args);
+            arglistAddIfNotExists(arglist, "output", "output.plantuml");
+            addBetmeSettings(arglist);
+            Options options = createOptions();
+            CommandLine cmd = parseOptions(options, arglist);
             Settings settings = parseSettings(cmd);
+
 
             DatabaseAnalyzer analyzer = DatabaseAnalyzer.newInjectedInstance(settings);
             analyzer.analyze();
@@ -38,7 +41,27 @@ public class Main {
         return settings;
     }
 
-    private static CommandLine parseOptions(final String[] args) throws ParseException {
+    private static CommandLine parseOptions(Options options, final List<String> args) throws ParseException {
+        CommandLineParser parser = new DefaultParser();
+        return parser.parse(options, args.toArray(new String[]{}));
+    }
+
+    private static void addBetmeSettings(List<String> arglist) {
+        arglistAddIfNotExists(arglist, "jdbcDriver", "com.mysql.cj.jdbc.Driver");
+        arglistAddIfNotExists(arglist, "jdbcUrl", "jdbc:mysql://localhost:3306/betme?user=betme&password=Milano93");
+        arglistAddIfNotExists(arglist, "tablenamePattern", "NULL");
+    }
+
+    private static void arglistAddIfNotExists(List<String> arglist, String key, String value) {
+        String modifiedKey = "-" + key;
+        if (!arglist.contains(modifiedKey)) {
+            arglist.add(modifiedKey);
+            arglist.add(value);
+        }
+    }
+
+
+    private static Options createOptions() {
         Options options = new Options();
         options.addOption(Option.builder("jdbcDriver").required().hasArg().desc("JDBC driver").build());
         options.addOption(Option.builder("jdbcUrl").required().hasArg().desc("JDBC url").build());
@@ -50,8 +73,7 @@ public class Main {
                 .desc("Names of columns that should be treated as technical").build());
         options.addOption(Option.builder("discriminatorColumn").hasArg()
                 .desc("Column name for inheritance discriminator").build());
-        CommandLineParser parser = new DefaultParser();
-        return parser.parse(options, args);
+        return options;
     }
 
 }

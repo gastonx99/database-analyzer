@@ -1,16 +1,25 @@
 package se.dandel.tools.dbanalyzer;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import java.util.Arrays;
 import java.util.Collection;
 
 public class Settings {
 
     private String outputFilename;
+
     private String jdbcUrl;
+
     private String jdbcDriver;
+
     private String liquibaseChangelog;
+
     private String tablenamePattern;
+
     private Collection<String> technicalColumns;
+
     private String discriminatorColumn;
 
     public void setOutputFilename(String outputFilename) {
@@ -69,4 +78,8 @@ public class Settings {
         this.discriminatorColumn = discriminatorColumn;
     }
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

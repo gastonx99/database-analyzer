@@ -1,15 +1,13 @@
 package se.dandel.tools.dbanalyzer;
 
+import org.apache.commons.lang.StringUtils;
+
+import javax.inject.Inject;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import javax.inject.Inject;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 
 public class PlantUMLWriter {
     private static final Comparator<Column> COLUMN_COMPARATOR = new Comparator<Column>() {
@@ -36,7 +34,6 @@ public class PlantUMLWriter {
         try {
             writePlantUML(database);
         } finally {
-            IOUtils.closeQuietly(context.get().pw);
             context.set(null);
         }
     }

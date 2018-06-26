@@ -1,6 +1,9 @@
 package se.dandel.tools.dbanalyzer;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.PrintWriter;
@@ -16,6 +19,8 @@ public class PlantUMLWriter {
         }
     };
 
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
     @Inject
     private Settings settings;
 
@@ -30,15 +35,18 @@ public class PlantUMLWriter {
     }
 
     public void write(Database database) throws Exception {
+        LOGGER.debug("Writing output to {}", settings.getOutputFilename());
         context.set(new Context(settings.getOutputFilename()));
         try {
             writePlantUML(database);
         } finally {
+            IOUtils.closeQuietly(context.get().pw);
             context.set(null);
         }
     }
 
     private void writePlantUML(Database database) {
+        LOGGER.debug("Write plantuml to {}", database);
         pw().println("@startuml");
         writeLegend();
         writeTableAndColumns(database);
@@ -63,7 +71,9 @@ public class PlantUMLWriter {
     }
 
     private void writeTableAndColumns(Database database) {
+        LOGGER.debug("Writing tables and columns");
         for (Table table : database.getTables()) {
+            LOGGER.debug("Writing table {}", table.getName());
             pw().println("class " + table.getName() + " {");
             for (Column column : getSortedPkColumns(table)) {
                 pw().println(getIndent(1) + "<i>" + getColumnString(column) + "</i>");
@@ -143,9 +153,11 @@ public class PlantUMLWriter {
 
     private List<Column> getTechnicalColumns(List<Column> columns) {
         List<Column> list = new ArrayList<Column>();
-        for (Column column : columns) {
-            if (settings.getTechnicalColumns().contains(column.getName())) {
-                list.add(column);
+        if (settings.getTechnicalColumns() != null) {
+            for (Column column : columns) {
+                if (settings.getTechnicalColumns().contains(column.getName())) {
+                    list.add(column);
+                }
             }
         }
         return list;
@@ -153,9 +165,11 @@ public class PlantUMLWriter {
 
     private List<Column> getFunctionalColumns(List<Column> columns) {
         List<Column> list = new ArrayList<Column>();
-        for (Column column : columns) {
-            if (!settings.getTechnicalColumns().contains(column.getName())) {
-                list.add(column);
+        if (settings.getTechnicalColumns() != null) {
+            for (Column column : columns) {
+                if (!settings.getTechnicalColumns().contains(column.getName())) {
+                    list.add(column);
+                }
             }
         }
         return list;

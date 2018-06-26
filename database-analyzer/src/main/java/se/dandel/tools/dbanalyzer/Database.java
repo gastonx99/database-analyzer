@@ -1,5 +1,8 @@
 package se.dandel.tools.dbanalyzer;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,5 +23,10 @@ public class Database {
 
     public Table getTable(String name) {
         return tables.get(name);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

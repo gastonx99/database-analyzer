@@ -1,14 +1,15 @@
 package se.dandel.tools.dbanalyzer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
+import java.util.*;
 
 public class Table {
     private final String name;
+
     private Map<String, Column> columns = new HashMap<String, Column>();
+
     private Collection<ForeignKey> foreignKeys = new ArrayList<ForeignKey>();
 
     public Table(String name) {
@@ -68,4 +69,8 @@ public class Table {
         return list;
     }
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

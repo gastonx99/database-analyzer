@@ -52,7 +52,7 @@ public class DatabaseAnalyzer {
 
     private void analyzeForeignKeys(DatabaseMetaData metaData, Database database) throws SQLException {
         for (Table table : database.getTables()) {
-            ResultSet resultSet = metaData.getImportedKeys(null, null, table.getName());
+            ResultSet resultSet = metaData.getImportedKeys(settings.getCatalogueName(), null, table.getName());
             while (resultSet.next()) {
                 String pkTableName = resultSet.getString("PKTABLE_NAME");
                 // String pkColumnName = resultSet.getString("PKCOLUMN_NAME");
@@ -67,7 +67,7 @@ public class DatabaseAnalyzer {
 
     private void analyzePrimaryKeys(DatabaseMetaData metaData, Database database) throws SQLException {
         for (Table table : database.getTables()) {
-            ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, table.getName());
+            ResultSet primaryKeys = metaData.getPrimaryKeys(settings.getCatalogueName(), null, table.getName());
             while (primaryKeys.next()) {
                 table.getColumn(primaryKeys.getString("COLUMN_NAME")).markPk();
             }
@@ -76,7 +76,7 @@ public class DatabaseAnalyzer {
 
     private void analyzeColumns(DatabaseMetaData metaData, Database database) throws SQLException {
         for (Table table : database.getTables()) {
-            ResultSet columns = metaData.getColumns(null, null, table.getName(), null);
+            ResultSet columns = metaData.getColumns(settings.getCatalogueName(), null, table.getName(), null);
             while (columns.next()) {
                 Column column = table.addColumn(columns.getString("COLUMN_NAME"));
                 column.setDatatype(columns.getString("TYPE_NAME"));
@@ -87,11 +87,14 @@ public class DatabaseAnalyzer {
     }
 
     private void analyzeTables(DatabaseMetaData metaData, Database database) throws SQLException {
-        ResultSet rsTables = metaData.getTables(null, null, settings.getTablenamePattern(), null);
+        LOGGER.debug("Analyzing tables using catalog {}, schemapattern {}, tablepattern {} and types {}", null, null, settings.getTablenamePattern(), null);
+        ResultSet rsTables = metaData.getTables(settings.getCatalogueName(), null, settings.getTablenamePattern(), null);
         while (rsTables.next()) {
             String tablename = rsTables.getString("TABLE_NAME");
+            LOGGER.debug("Analyzing table {}", tablename);
             database.addTable(tablename);
         }
+        LOGGER.debug("Done analyzing tables");
     }
 
     private void runLiquibase(Connection c) throws LiquibaseException {

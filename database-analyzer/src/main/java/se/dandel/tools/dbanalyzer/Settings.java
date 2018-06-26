@@ -3,6 +3,7 @@ package se.dandel.tools.dbanalyzer;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -18,9 +19,11 @@ public class Settings {
 
     private String tablenamePattern;
 
-    private Collection<String> technicalColumns;
+    private Collection<String> technicalColumns = new ArrayList<>();
 
     private String discriminatorColumn;
+
+    private String catalogueName;
 
     public void setOutputFilename(String outputFilename) {
         this.outputFilename = outputFilename;
@@ -81,5 +84,13 @@ public class Settings {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    public void setCatalogueName(String catalogueName) {
+        this.catalogueName = catalogueName;
+    }
+
+    public String getCatalogueName() {
+        return catalogueName;
     }
 }

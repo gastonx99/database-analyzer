@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlantUMLWriter {
     private static final Comparator<Column> COLUMN_COMPARATOR = Comparator.comparingInt(Column::getOrdinalPosition);
@@ -30,59 +31,56 @@ public class PlantUMLWriter {
 
     private void writeLegend(Settings settings) {
         settings.getPrintWriter().println("legend top");
-        settings.getPrintWriter().println("Separata sektioner för PK, FK, vanliga kolumner och tekniska kolumner");
-        settings.getPrintWriter().println("<i>Kursiv</i> stil för NULLABLE");
+        settings.getPrintWriter().println("Separata sektioner för PK, FK, funktionella kolumner och tekniska kolumner");
+        settings.getPrintWriter().println("<i>Kursiv stil för NULLABLE</i>");
         settings.getPrintWriter().println("endlegend");
     }
 
     private void writeRelations(Settings settings, Database database) {
-        for (Table table : database.getTables()) {
-            for (ForeignKey key : table.getForeignKeys()) {
-                settings.getPrintWriter().println(table.getName() + " --> " + key.getFkTable().getName() + " : " + key.getFkName());
-            }
-        }
+        database.getTables().forEach(t -> writeRelations(settings, t));
+    }
+
+    private void writeRelations(Settings settings, Table table) {
+        table.getForeignKeys().forEach(fk -> settings.getPrintWriter().println(table.getName() + " --> " + fk.getFkTable().getName() + " : " + fk.getFkName()));
     }
 
     private void writeTableAndColumns(Settings settings, Database database) {
         LOGGER.debug("Writing tables and columns");
-        for (Table table : database.getTables()) {
-            LOGGER.debug("Writing table {}", table.getName());
-            settings.getPrintWriter().println("class " + table.getName() + " {");
-            for (Column column : getSortedPkColumns(table)) {
-                settings.getPrintWriter().println(getIndent(1) + getColumnString(column));
-            }
+        database.getTables().forEach(t -> writeTable(settings, t));
+    }
 
-            Column dtype = table.getColumn(settings.getDiscriminatorColumn());
-            if (dtype != null) {
-                settings.getPrintWriter().println(getIndent(1) + "--");
-                settings.getPrintWriter().println(getIndent(1) + getColumnString(dtype));
-            }
-
-            List<Column> fkColumns = getSortedFkColumns(table);
-            if (!fkColumns.isEmpty()) {
-                settings.getPrintWriter().println(getIndent(1) + "--");
-                for (Column column : fkColumns) {
-                    settings.getPrintWriter().println(getIndent(1) + getColumnString(column));
-                }
-            }
-
-            List<Column> functionalColumns = getSortedFunctionalColumns(settings, table);
-            if (!functionalColumns.isEmpty()) {
-                settings.getPrintWriter().println(getIndent(1) + "--");
-                for (Column column : functionalColumns) {
-                    settings.getPrintWriter().println(getIndent(1) + getColumnString(column));
-                }
-            }
-
-            List<Column> technicalColumns = getSortedTechColumns(settings, table);
-            if (!technicalColumns.isEmpty()) {
-                settings.getPrintWriter().println(getIndent(1) + "--");
-                for (Column column : technicalColumns) {
-                    settings.getPrintWriter().println(getIndent(1) + getColumnString(column));
-                }
-            }
-            settings.getPrintWriter().println("}");
+    private void writeTable(Settings settings, Table table) {
+        LOGGER.debug("Writing table {}", table.getName());
+        settings.getPrintWriter().println("class " + table.getName() + " {");
+        List<Column> pkColumns = getSortedPkColumns(table);
+        if (!pkColumns.isEmpty()) {
+            pkColumns.forEach(c -> settings.getPrintWriter().println(getIndent(1) + getColumnString(c)));
         }
+
+        Column dtype = table.getColumn(settings.getDiscriminatorColumn());
+        if (dtype != null) {
+            settings.getPrintWriter().println(getIndent(1) + "-- Discriminator --");
+            settings.getPrintWriter().println(getIndent(1) + getColumnString(dtype));
+        }
+
+        List<Column> fkColumns = getSortedFkColumns(table);
+        if (!fkColumns.isEmpty()) {
+            settings.getPrintWriter().println(getIndent(1) + "-- FK --");
+            fkColumns.forEach(c -> settings.getPrintWriter().println(getIndent(1) + getColumnString(c)));
+        }
+
+        List<Column> functionalColumns = getSortedFunctionalColumns(settings, table);
+        if (!functionalColumns.isEmpty()) {
+            settings.getPrintWriter().println(getIndent(1) + "--");
+            functionalColumns.forEach(c -> settings.getPrintWriter().println(getIndent(1) + getColumnString(c)));
+        }
+
+        List<Column> technicalColumns = getSortedTechColumns(settings, table);
+        if (!technicalColumns.isEmpty()) {
+            settings.getPrintWriter().println(getIndent(1) + "-- Technical --");
+            technicalColumns.forEach(c -> settings.getPrintWriter().println(getIndent(1) + getColumnString(c)));
+        }
+        settings.getPrintWriter().println("}");
     }
 
     private String getColumnString(Column column) {
@@ -121,27 +119,11 @@ public class PlantUMLWriter {
     }
 
     private List<Column> getTechnicalColumns(Settings settings, List<Column> columns) {
-        List<Column> list = new ArrayList<>();
-        if (settings.getTechnicalColumns() != null) {
-            for (Column column : columns) {
-                if (settings.getTechnicalColumns().contains(column.getName())) {
-                    list.add(column);
-                }
-            }
-        }
-        return list;
+        return columns.stream().filter(c -> settings.getTechnicalColumns().contains(c.getName())).collect(Collectors.toList());
     }
 
     private List<Column> getFunctionalColumns(Settings settings, List<Column> columns) {
-        List<Column> list = new ArrayList<>();
-        if (settings.getTechnicalColumns() != null) {
-            for (Column column : columns) {
-                if (!settings.getTechnicalColumns().contains(column.getName())) {
-                    list.add(column);
-                }
-            }
-        }
-        return list;
+        return columns.stream().filter(c -> !settings.getTechnicalColumns().contains(c.getName())).collect(Collectors.toList());
     }
 
     private String getIndent(int indent) {

@@ -1,7 +1,5 @@
 package se.dandel.tools.dbanalyzer;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
 import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
@@ -22,35 +20,28 @@ public class DatabaseAnalyzer {
     @Inject
     private PlantUMLWriter writer;
 
-    @Inject
-    private Settings settings;
-
-    private DatabaseAnalyzer() {
-        // Create instance using static methods
-    }
-
-    public void analyze() throws Exception {
+    public void analyze(Settings settings) throws Exception {
         LOGGER.debug("Analyzing using settings {}", settings);
-        Database database = analyzeDatabase();
-        writer.write(database);
+        Database database = analyzeDatabase(settings);
+        writer.write(settings, database);
     }
 
-    private Database analyzeDatabase() throws ClassNotFoundException, SQLException, LiquibaseException {
-        Connection connection = getConnection();
+    private Database analyzeDatabase(Settings settings) throws ClassNotFoundException, SQLException, LiquibaseException {
+        Connection connection = getConnection(settings);
         if (StringUtils.isNotEmpty(settings.getLiquibaseChangelog())) {
-            runLiquibase(connection);
+            runLiquibase(settings, connection);
         }
 
         DatabaseMetaData metaData = connection.getMetaData();
         Database database = new Database();
-        analyzeTables(metaData, database);
-        analyzeColumns(metaData, database);
-        analyzePrimaryKeys(metaData, database);
-        analyzeForeignKeys(metaData, database);
+        analyzeTables(settings, metaData, database);
+        analyzeColumns(settings, metaData, database);
+        analyzePrimaryKeys(settings, metaData, database);
+        analyzeForeignKeys(settings, metaData, database);
         return database;
     }
 
-    private void analyzeForeignKeys(DatabaseMetaData metaData, Database database) throws SQLException {
+    private void analyzeForeignKeys(Settings settings, DatabaseMetaData metaData, Database database) throws SQLException {
         for (Table table : database.getTables()) {
             ResultSet resultSet = metaData.getImportedKeys(settings.getCatalogueName(), null, table.getName());
             while (resultSet.next()) {
@@ -65,7 +56,7 @@ public class DatabaseAnalyzer {
         }
     }
 
-    private void analyzePrimaryKeys(DatabaseMetaData metaData, Database database) throws SQLException {
+    private void analyzePrimaryKeys(Settings settings, DatabaseMetaData metaData, Database database) throws SQLException {
         for (Table table : database.getTables()) {
             ResultSet primaryKeys = metaData.getPrimaryKeys(settings.getCatalogueName(), null, table.getName());
             while (primaryKeys.next()) {
@@ -74,7 +65,7 @@ public class DatabaseAnalyzer {
         }
     }
 
-    private void analyzeColumns(DatabaseMetaData metaData, Database database) throws SQLException {
+    private void analyzeColumns(Settings settings, DatabaseMetaData metaData, Database database) throws SQLException {
         for (Table table : database.getTables()) {
             ResultSet columns = metaData.getColumns(settings.getCatalogueName(), null, table.getName(), null);
             while (columns.next()) {
@@ -86,7 +77,7 @@ public class DatabaseAnalyzer {
         }
     }
 
-    private void analyzeTables(DatabaseMetaData metaData, Database database) throws SQLException {
+    private void analyzeTables(Settings settings, DatabaseMetaData metaData, Database database) throws SQLException {
         LOGGER.debug("Analyzing tables using catalog {}, schemapattern {}, tablepattern {} and types {}", null, null, settings.getTablenamePattern(), null);
         ResultSet rsTables = metaData.getTables(settings.getCatalogueName(), null, settings.getTablenamePattern(), null);
         while (rsTables.next()) {
@@ -97,29 +88,16 @@ public class DatabaseAnalyzer {
         LOGGER.debug("Done analyzing tables");
     }
 
-    private void runLiquibase(Connection c) throws LiquibaseException {
+    private void runLiquibase(Settings settings, Connection c) throws LiquibaseException {
         ResourceAccessor resourceAccessor = new FileSystemResourceAccessor();
         DatabaseConnection dbConn = new JdbcConnection(c);
         Liquibase liquibase = new Liquibase(settings.getLiquibaseChangelog(), resourceAccessor, dbConn);
         liquibase.update((String) null);
     }
 
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
+    private Connection getConnection(Settings settings) throws ClassNotFoundException, SQLException {
         Class.forName(settings.getJdbcDriver());
         return DriverManager.getConnection(settings.getJdbcUrl());
-    }
-
-    public static DatabaseAnalyzer newInjectedInstance(final Settings settings) {
-        DatabaseAnalyzer analyzer = new DatabaseAnalyzer();
-
-        AbstractModule module = new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(Settings.class).toInstance(settings);
-            }
-        };
-        Guice.createInjector(module).injectMembers(analyzer);
-        return analyzer;
     }
 
 }

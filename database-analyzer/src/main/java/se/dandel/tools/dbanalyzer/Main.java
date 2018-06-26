@@ -1,8 +1,10 @@
 package se.dandel.tools.dbanalyzer;
 
+import com.google.inject.Guice;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,9 +19,11 @@ public class Main {
             CommandLine cmd = parseOptions(options, arglist);
             Settings settings = parseSettings(cmd);
 
-
-            DatabaseAnalyzer analyzer = DatabaseAnalyzer.newInjectedInstance(settings);
-            analyzer.analyze();
+            PrintWriter printWriter = new PrintWriter(settings.getOutputFilename());
+            settings.setPrintWriter(printWriter);
+            DatabaseAnalyzer analyzer = Guice.createInjector().getInstance(DatabaseAnalyzer.class);
+            analyzer.analyze(settings);
+            printWriter.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

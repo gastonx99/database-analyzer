@@ -3,6 +3,7 @@ package se.dandel.tools.dbanalyzer;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +25,8 @@ public class Settings {
     private String discriminatorColumn;
 
     private String catalogueName;
+
+    private PrintWriter printWriter;
 
     public void setOutputFilename(String outputFilename) {
         this.outputFilename = outputFilename;
@@ -92,5 +95,13 @@ public class Settings {
 
     public String getCatalogueName() {
         return catalogueName;
+    }
+
+    public PrintWriter getPrintWriter() {
+        return printWriter;
+    }
+
+    public void setPrintWriter(PrintWriter printWriter) {
+        this.printWriter = printWriter;
     }
 }

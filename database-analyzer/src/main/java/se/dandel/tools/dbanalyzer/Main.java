@@ -3,14 +3,13 @@ package se.dandel.tools.dbanalyzer;
 import com.google.inject.Guice;
 import org.apache.commons.cli.*;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String[] args) {
         List<String> arglist = args == null ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(args));
         try {
             arglistAddIfNotExists(arglist, "output", "target/output.plantuml");
@@ -31,8 +30,10 @@ public class Main {
 
     private static Settings parseSettings(CommandLine cmd) {
         Settings settings = new Settings();
-        settings.setJdbcDriver(cmd.getOptionValue("jdbcDriver"));
-        settings.setJdbcUrl(cmd.getOptionValue("jdbcUrl"));
+        settings.setDriver(cmd.getOptionValue("driver"));
+        settings.setUrl(cmd.getOptionValue("url"));
+        settings.setUser(cmd.getOptionValue("user"));
+        settings.setPassword(cmd.getOptionValue("password"));
         settings.setTablenamePattern(cmd.getOptionValue("tablenamePattern"));
         settings.setCatalogueName(cmd.getOptionValue("catalogueNamePattern"));
         settings.setOutputFilename(cmd.getOptionValue("output"));
@@ -52,8 +53,10 @@ public class Main {
     }
 
     private static void addBetmeSettings(List<String> arglist) {
-        arglistAddIfNotExists(arglist, "jdbcDriver", "com.mysql.cj.jdbc.Driver");
-        arglistAddIfNotExists(arglist, "jdbcUrl", "jdbc:mysql://localhost:3306/betme?user=betme&password=Milano93");
+        arglistAddIfNotExists(arglist, "driver", "com.mysql.cj.jdbc.Driver");
+        arglistAddIfNotExists(arglist, "url", "jdbc:mysql://localhost:3306/betme");
+        arglistAddIfNotExists(arglist, "user", "betme");
+        arglistAddIfNotExists(arglist, "password", "Milano93");
         arglistAddIfNotExists(arglist, "catalogueNamePattern", "betme");
 //        arglistAddIfNotExists(arglist, "tablenamePattern", "NULL");
     }
@@ -66,11 +69,12 @@ public class Main {
         }
     }
 
-
     private static Options createOptions() {
         Options options = new Options();
-        options.addOption(Option.builder("jdbcDriver").required().hasArg().desc("JDBC driver").build());
-        options.addOption(Option.builder("jdbcUrl").required().hasArg().desc("JDBC url").build());
+        options.addOption(Option.builder("driver").required().hasArg().desc("Database driver").build());
+        options.addOption(Option.builder("url").required().hasArg().desc("Database url").build());
+        options.addOption(Option.builder("user").required().hasArg().desc("Database user").build());
+        options.addOption(Option.builder("password").required().hasArg().desc("Database password").build());
         options.addOption(Option.builder("output").required().hasArg().desc("Output filename").build());
 
         options.addOption(

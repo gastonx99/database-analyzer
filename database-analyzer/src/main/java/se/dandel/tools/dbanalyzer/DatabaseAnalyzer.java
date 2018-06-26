@@ -96,8 +96,8 @@ public class DatabaseAnalyzer {
     }
 
     private Connection getConnection(Settings settings) throws ClassNotFoundException, SQLException {
-        Class.forName(settings.getJdbcDriver());
-        return DriverManager.getConnection(settings.getJdbcUrl());
+        Class.forName(settings.getDriver());
+        return DriverManager.getConnection(settings.getUrl(), settings.getUser(), settings.getPassword());
     }
 
 }

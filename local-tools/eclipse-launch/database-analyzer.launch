@@ -15,7 +15,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="se.dandel.tools.dbanalyzer.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-jdbcDriver org.hsqldb.jdbcDriver&#13;&#10;-jdbcUrl jdbc:hsqldb:mem:testdb;sql.syntax_ora=true&#13;&#10;-liquibaseChangelog ${project_loc:malh-db}/src/main/resources/liquibase/master-ddl.xml&#13;&#10;-tablenamePattern MALH_%&#13;&#10;-technicalColumns UPPDATERAD,UPPDATERAD_AV,SKAPAD,SKAPAD_AV,CREATED,CREATED_BY,UPDATED,UPDATED_BY,DTYPE,VERSION&#13;&#10;-discriminatorColumn DTYPE&#13;&#10;-output target/database.plantuml"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-driver org.hsqldb.driver&#13;&#10;-url jdbc:hsqldb:mem:testdb;sql.syntax_ora=true&#13;&#10;-liquibaseChangelog ${project_loc:malh-db}/src/main/resources/liquibase/master-ddl.xml&#13;&#10;-tablenamePattern MALH_%&#13;&#10;-technicalColumns UPPDATERAD,UPPDATERAD_AV,SKAPAD,SKAPAD_AV,CREATED,CREATED_BY,UPDATED,UPDATED_BY,DTYPE,VERSION&#13;&#10;-discriminatorColumn DTYPE&#13;&#10;-output target/database.plantuml"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="database-analyzer"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 </launchConfiguration>

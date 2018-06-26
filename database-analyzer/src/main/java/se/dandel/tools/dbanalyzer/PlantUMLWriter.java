@@ -31,8 +31,7 @@ public class PlantUMLWriter {
     private void writeLegend(Settings settings) {
         settings.getPrintWriter().println("legend top");
         settings.getPrintWriter().println("Separata sektioner för PK, FK, vanliga kolumner och tekniska kolumner");
-        settings.getPrintWriter().println("<i>Kursiv</i> stil för syntetiska nycklar");
-        settings.getPrintWriter().println("<b>Fet</b> stil för NOT NULL");
+        settings.getPrintWriter().println("<i>Kursiv</i> stil för NULLABLE");
         settings.getPrintWriter().println("endlegend");
     }
 
@@ -50,7 +49,7 @@ public class PlantUMLWriter {
             LOGGER.debug("Writing table {}", table.getName());
             settings.getPrintWriter().println("class " + table.getName() + " {");
             for (Column column : getSortedPkColumns(table)) {
-                settings.getPrintWriter().println(getIndent(1) + "<i>" + getColumnString(column) + "</i>");
+                settings.getPrintWriter().println(getIndent(1) + getColumnString(column));
             }
 
             Column dtype = table.getColumn(settings.getDiscriminatorColumn());
@@ -89,8 +88,8 @@ public class PlantUMLWriter {
     private String getColumnString(Column column) {
         String name = column.getName();
         String datatype = column.getDatatype();
-        if (!column.isNullable()) {
-            name = "<b>" + name + "</b>";
+        if (column.isNullable()) {
+            name = "<i>" + name + "</i>";
         }
         return name + " : " + datatype;
     }

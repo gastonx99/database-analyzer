@@ -5,12 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PlantUMLWriter {
-    private static final Comparator<Column> COLUMN_COMPARATOR = Comparator.comparingInt(Column::getOrdinalPosition);
+    private static final Comparator<Column> COLUMN_COMPARATOR = Comparator.comparing(Column::getName);
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -46,7 +47,9 @@ public class PlantUMLWriter {
 
     private void writeTableAndColumns(Settings settings, Database database) {
         LOGGER.debug("Writing tables and columns");
-        database.getTables().forEach(t -> writeTable(settings, t));
+        List<Table> tables = new ArrayList<>(database.getTables());
+        Collections.sort(tables, Comparator.comparing(Table::getName));
+        tables.forEach(t -> writeTable(settings, t));
     }
 
     private void writeTable(Settings settings, Table table) {

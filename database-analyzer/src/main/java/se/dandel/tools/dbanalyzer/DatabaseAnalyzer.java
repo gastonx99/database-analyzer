@@ -43,47 +43,51 @@ public class DatabaseAnalyzer {
 
     private void analyzeForeignKeys(Settings settings, DatabaseMetaData metaData, Database database) throws SQLException {
         for (Table table : database.getTables()) {
-            ResultSet resultSet = metaData.getImportedKeys(settings.getCatalogueName(), null, table.getName());
-            while (resultSet.next()) {
-                String pkTableName = resultSet.getString("PKTABLE_NAME");
-                // String pkColumnName = resultSet.getString("PKCOLUMN_NAME");
-                String fkTableName = resultSet.getString("FKTABLE_NAME");
-                String fkColumnName = resultSet.getString("FKCOLUMN_NAME");
-                String fkName = resultSet.getString("FK_NAME");
-                table.addImportedKey(database.getTable(pkTableName), fkName);
-                database.getTable(fkTableName).getColumn(fkColumnName).markFk();
+            try (ResultSet resultSet = metaData.getImportedKeys(settings.getCatalogueName(), settings.getSchemaName(), table.getName())) {
+                while (resultSet.next()) {
+                    String pkTableName = resultSet.getString("PKTABLE_NAME");
+                    // String pkColumnName = resultSet.getString("PKCOLUMN_NAME");
+                    String fkTableName = resultSet.getString("FKTABLE_NAME");
+                    String fkColumnName = resultSet.getString("FKCOLUMN_NAME");
+                    String fkName = resultSet.getString("FK_NAME");
+                    table.addImportedKey(database.getTable(pkTableName), fkName);
+                    database.getTable(fkTableName).getColumn(fkColumnName).markFk();
+                }
             }
         }
     }
 
     private void analyzePrimaryKeys(Settings settings, DatabaseMetaData metaData, Database database) throws SQLException {
         for (Table table : database.getTables()) {
-            ResultSet primaryKeys = metaData.getPrimaryKeys(settings.getCatalogueName(), null, table.getName());
-            while (primaryKeys.next()) {
-                table.getColumn(primaryKeys.getString("COLUMN_NAME")).markPk();
+            try (ResultSet primaryKeys = metaData.getPrimaryKeys(settings.getCatalogueName(), settings.getSchemaName(), table.getName())) {
+                while (primaryKeys.next()) {
+                    table.getColumn(primaryKeys.getString("COLUMN_NAME")).markPk();
+                }
             }
         }
     }
 
     private void analyzeColumns(Settings settings, DatabaseMetaData metaData, Database database) throws SQLException {
         for (Table table : database.getTables()) {
-            ResultSet columns = metaData.getColumns(settings.getCatalogueName(), null, table.getName(), null);
-            while (columns.next()) {
-                Column column = table.addColumn(columns.getString("COLUMN_NAME"));
-                column.setDatatype(columns.getString("TYPE_NAME"));
-                column.setNullable(columns.getInt("NULLABLE") == DatabaseMetaData.columnNullable);
-                column.setOrdinalPosition(columns.getInt("ORDINAL_POSITION"));
+            try (ResultSet columns = metaData.getColumns(settings.getCatalogueName(), settings.getSchemaName(), table.getName(), null)) {
+                while (columns.next()) {
+                    Column column = table.addColumn(columns.getString("COLUMN_NAME"));
+                    column.setDatatype(columns.getString("TYPE_NAME"));
+                    column.setNullable(columns.getInt("NULLABLE") == DatabaseMetaData.columnNullable);
+                    column.setOrdinalPosition(columns.getInt("ORDINAL_POSITION"));
+                }
             }
         }
     }
 
     private void analyzeTables(Settings settings, DatabaseMetaData metaData, Database database) throws SQLException {
         LOGGER.debug("Analyzing tables using catalog {}, schemapattern {}, tablepattern {} and types {}", null, null, settings.getTablenamePattern(), null);
-        ResultSet rsTables = metaData.getTables(settings.getCatalogueName(), null, settings.getTablenamePattern(), null);
-        while (rsTables.next()) {
-            String tablename = rsTables.getString("TABLE_NAME");
-            LOGGER.debug("Analyzing table {}", tablename);
-            database.addTable(tablename);
+        try (ResultSet rsTables = metaData.getTables(settings.getCatalogueName(), settings.getSchemaName(), settings.getTablenamePattern(), null)) {
+            while (rsTables.next()) {
+                String tablename = rsTables.getString("TABLE_NAME");
+                LOGGER.debug("Analyzing table {}", tablename);
+                database.addTable(tablename);
+            }
         }
         LOGGER.debug("Done analyzing tables");
     }

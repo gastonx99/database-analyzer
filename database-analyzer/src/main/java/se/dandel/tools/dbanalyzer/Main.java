@@ -13,7 +13,7 @@ public class Main {
         List<String> arglist = args == null ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(args));
         try {
             arglistAddIfNotExists(arglist, "output", "target/output.plantuml");
-            addBetmeSettings(arglist);
+            addDefaultSettings(arglist);
             Options options = createOptions();
             CommandLine cmd = parseOptions(options, arglist);
             Settings settings = parseSettings(cmd);
@@ -36,6 +36,7 @@ public class Main {
         settings.setPassword(cmd.getOptionValue("password"));
         settings.setTablenamePattern(cmd.getOptionValue("tablenamePattern"));
         settings.setCatalogueName(cmd.getOptionValue("catalogueNamePattern"));
+        settings.setSchemaName(cmd.getOptionValue("schemaNamePattern"));
         settings.setOutputFilename(cmd.getOptionValue("output"));
         settings.setLiquibaseChangelog(cmd.getOptionValue("liquibaseChangelog"));
         if (cmd.hasOption("discriminatorColumn")) {
@@ -52,12 +53,12 @@ public class Main {
         return parser.parse(options, args.toArray(new String[]{}));
     }
 
-    private static void addBetmeSettings(List<String> arglist) {
-        arglistAddIfNotExists(arglist, "driver", "com.mysql.cj.jdbc.Driver");
-        arglistAddIfNotExists(arglist, "url", "jdbc:mysql://localhost:3306/betme");
-        arglistAddIfNotExists(arglist, "user", "betme");
-        arglistAddIfNotExists(arglist, "password", "Milano93");
-        arglistAddIfNotExists(arglist, "catalogueNamePattern", "betme");
+    private static void addDefaultSettings(List<String> arglist) {
+//        arglistAddIfNotExists(arglist, "driver", "com.mysql.cj.jdbc.Driver");
+//        arglistAddIfNotExists(arglist, "url", "jdbc:mysql://localhost:3306/betme");
+//        arglistAddIfNotExists(arglist, "user", "betme");
+//        arglistAddIfNotExists(arglist, "password", "Milano93");
+//        arglistAddIfNotExists(arglist, "catalogueNamePattern", "betme");
 //        arglistAddIfNotExists(arglist, "tablenamePattern", "NULL");
     }
 
@@ -79,6 +80,8 @@ public class Main {
 
         options.addOption(
                 Option.builder("catalogueNamePattern").hasArg().desc("Pattern for catalogues to analyze").build());
+        options.addOption(
+                Option.builder("schemaNamePattern").hasArg().desc("Pattern for schemas to analyze").build());
         options.addOption(
                 Option.builder("tablenamePattern").hasArg().desc("Pattern for tables to analyze").build());
         options.addOption(Option.builder("liquibaseChangelog").hasArg().desc("Liquibase changelog file path").build());

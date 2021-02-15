@@ -30,6 +30,8 @@ public class Settings {
 
     private String catalogueName;
 
+    private String schemaName;
+
     private PrintWriter printWriter;
 
     public void setOutputFilename(String outputFilename) {
@@ -117,6 +119,14 @@ public class Settings {
         return catalogueName;
     }
 
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
     public PrintWriter getPrintWriter() {
         return printWriter;
     }
@@ -124,4 +134,5 @@ public class Settings {
     public void setPrintWriter(PrintWriter printWriter) {
         this.printWriter = printWriter;
     }
+
 }
